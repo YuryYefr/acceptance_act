@@ -34,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => acts = loaded);
   }
 
-
   Future<void> _createAct() async {
     final now = DateTime.now();
     final defaultName =
@@ -42,23 +41,24 @@ class _HomeScreenState extends State<HomeScreen> {
         '${now.hour.toString().padLeft(2, '0')}-${now.minute.toString().padLeft(2, '0')}';
 
     final controller = TextEditingController(text: defaultName);
+    final localizations = AppLocalizations.of(context);
 
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('New Acceptance Act'),
+        title: Text(localizations.newAct),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(labelText: 'Act Name'),
+          decoration: InputDecoration(labelText: localizations.actName),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, null),
-            child: const Text('Cancel'),
+            child: Text(localizations.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Create'),
+            child: Text(localizations.create),
           ),
         ],
       ),
@@ -86,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await _loadActs();
   }
-
 
   @override
   Widget build(BuildContext context) {

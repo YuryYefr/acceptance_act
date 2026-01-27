@@ -53,7 +53,6 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
   }
 
   Future<void> _addInvoice() async {
-    final localizations = AppLocalizations.of(context);
     final invoice = await Navigator.push<Invoice>(
       context,
       MaterialPageRoute(
@@ -65,7 +64,6 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
   }
 
   Future<void> _editInvoice(int index) async {
-    final localizations = AppLocalizations.of(context);
     final updated = await Navigator.push<Invoice>(
       context,
       MaterialPageRoute(
@@ -127,17 +125,17 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: _persist,
-            tooltip: 'Save',
+            tooltip: localizations.save,
           ),
           IconButton(
             icon: const Icon(Icons.download),
             onPressed: _exportAct,
-            tooltip: 'Download',
+            tooltip: localizations.download,
           ),
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: _deleteAct,
-            tooltip: 'Delete',
+            tooltip: localizations.delete,
           ),
         ],
       ),
