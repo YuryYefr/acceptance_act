@@ -25,7 +25,7 @@ class AcceptanceAct {
     category = categories.isEmpty
         ? ''
         : categories.length == 1
-        ? categories.first
-        : 'Mixed';
+            ? categories.first
+            : 'Mixed';
   }
 }

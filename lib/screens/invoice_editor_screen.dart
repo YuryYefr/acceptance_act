@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/invoice.dart';
+import '../l10n/app_localizations.dart';
 
 class InvoiceEditorScreen extends StatefulWidget {
   final Invoice? invoice;
+  final Locale? locale;
 
-  const InvoiceEditorScreen({super.key, this.invoice});
+  const InvoiceEditorScreen({super.key, this.invoice, this.locale});
 
   @override
   State<InvoiceEditorScreen> createState() => _InvoiceEditorScreenState();
@@ -22,8 +24,10 @@ class _InvoiceEditorScreenState extends State<InvoiceEditorScreen> {
     super.initState();
     _categoryCtrl = TextEditingController(text: widget.invoice?.category ?? '');
     _unitCtrl = TextEditingController(text: widget.invoice?.unit ?? '');
-    _priceCtrl = TextEditingController(text: widget.invoice?.price.toString() ?? '');
-    _quantityCtrl = TextEditingController(text: widget.invoice?.quantity.toString() ?? '');
+    _priceCtrl =
+        TextEditingController(text: widget.invoice?.price.toString() ?? '');
+    _quantityCtrl =
+        TextEditingController(text: widget.invoice?.quantity.toString() ?? '');
   }
 
   @override
@@ -58,8 +62,13 @@ class _InvoiceEditorScreenState extends State<InvoiceEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: Text(widget.invoice == null ? 'Add Invoice' : 'Edit Invoice')),
+      appBar: AppBar(
+          title: Text(widget.invoice == null
+              ? localizations.addInvoice
+              : localizations.editInvoice)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -68,30 +77,30 @@ class _InvoiceEditorScreenState extends State<InvoiceEditorScreen> {
             children: [
               TextFormField(
                 controller: _categoryCtrl,
-                decoration: const InputDecoration(labelText: 'Category'),
+                decoration: InputDecoration(labelText: localizations.category),
                 validator: _validateRequired,
               ),
               TextFormField(
                 controller: _unitCtrl,
-                decoration: const InputDecoration(labelText: 'Unit'),
+                decoration: InputDecoration(labelText: localizations.unit),
                 validator: _validateRequired,
               ),
               TextFormField(
                 controller: _priceCtrl,
-                decoration: const InputDecoration(labelText: 'Price'),
+                decoration: InputDecoration(labelText: localizations.price),
                 keyboardType: TextInputType.number,
                 validator: _validateNumber,
               ),
               TextFormField(
                 controller: _quantityCtrl,
-                decoration: const InputDecoration(labelText: 'Quantity'),
+                decoration: InputDecoration(labelText: localizations.quantity),
                 keyboardType: TextInputType.number,
                 validator: _validateNumber,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveInvoice,
-                child: const Text('Save Invoice'),
+                child: Text(localizations.save),
               ),
             ],
           ),

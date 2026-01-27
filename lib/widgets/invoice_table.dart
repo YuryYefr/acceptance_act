@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/invoice.dart';
+import '../l10n/app_localizations.dart';
 
 class InvoiceTable extends StatelessWidget {
   final List<Invoice> invoices;
@@ -15,8 +16,10 @@ class InvoiceTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     if (invoices.isEmpty) {
-      return const Center(child: Text('No invoices added.'));
+      return Center(child: Text(localizations.invoices));
     }
 
     return ListView.separated(
@@ -26,7 +29,8 @@ class InvoiceTable extends StatelessWidget {
         final inv = invoices[index];
         return ListTile(
           title: Text('${inv.category} - ${inv.unit}'),
-          subtitle: Text('Price: ${inv.price}, Qty: ${inv.quantity}, Total: ${inv.total.toStringAsFixed(2)}'),
+          subtitle: Text(
+              'Price: ${inv.price}, Qty: ${inv.quantity}, Total: ${inv.total.toStringAsFixed(2)}'),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

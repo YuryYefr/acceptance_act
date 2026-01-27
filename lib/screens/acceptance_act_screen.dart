@@ -4,15 +4,18 @@ import '../models/invoice.dart';
 import '../services/storage_service.dart';
 import '../widgets/invoice_table.dart';
 import 'invoice_editor_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class AcceptanceActScreen extends StatefulWidget {
   final AcceptanceAct act;
   final StorageService storage;
+  final Locale? locale;
 
   const AcceptanceActScreen({
     super.key,
     required this.act,
     required this.storage,
+    this.locale,
   });
 
   @override
@@ -50,9 +53,11 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
   }
 
   Future<void> _addInvoice() async {
+    final localizations = AppLocalizations.of(context);
     final invoice = await Navigator.push<Invoice>(
       context,
-      MaterialPageRoute(builder: (_) => const InvoiceEditorScreen()),
+      MaterialPageRoute(
+          builder: (_) => InvoiceEditorScreen(locale: widget.locale)),
     );
     if (invoice == null) return;
     _act.invoices.add(invoice);
@@ -60,10 +65,12 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
   }
 
   Future<void> _editInvoice(int index) async {
+    final localizations = AppLocalizations.of(context);
     final updated = await Navigator.push<Invoice>(
       context,
       MaterialPageRoute(
-        builder: (_) => InvoiceEditorScreen(invoice: _act.invoices[index]),
+        builder: (_) => InvoiceEditorScreen(
+            invoice: _act.invoices[index], locale: widget.locale),
       ),
     );
     if (updated == null) return;
@@ -72,6 +79,27 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
   }
 
   Future<void> _deleteAct() async {
+    final localizations = AppLocalizations.of(context);
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.confirmDeletion),
+        content: Text(localizations.deleteConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(localizations.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(localizations.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete != true) return;
+
     await widget.storage.deleteAct(_act);
     if (mounted) Navigator.pop(context, true);
   }
@@ -91,13 +119,26 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(_act.name),
         actions: [
-          IconButton(icon: const Icon(Icons.save), onPressed: _persist),
-          IconButton(icon: const Icon(Icons.download), onPressed: _exportAct),
-          IconButton(icon: const Icon(Icons.delete), onPressed: _deleteAct),
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: _persist,
+            tooltip: 'Save',
+          ),
+          IconButton(
+            icon: const Icon(Icons.download),
+            onPressed: _exportAct,
+            tooltip: 'Download',
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: _deleteAct,
+            tooltip: 'Delete',
+          ),
         ],
       ),
       body: Padding(
@@ -110,9 +151,11 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _summaryItem('Category', _act.category),
-                    _summaryItem('Quantity', _act.quantity.toString()),
-                    _summaryItem('Sum', _act.sum.toStringAsFixed(2)),
+                    _summaryItem(localizations.category, _act.category),
+                    _summaryItem(
+                        localizations.quantity, _act.quantity.toString()),
+                    _summaryItem(
+                        localizations.sum, _act.sum.toStringAsFixed(2)),
                   ],
                 ),
               ),
@@ -121,11 +164,12 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Invoices', style: TextStyle(fontSize: 18)),
+                Text(localizations.invoices,
+                    style: const TextStyle(fontSize: 18)),
                 ElevatedButton.icon(
                   onPressed: _addInvoice,
                   icon: const Icon(Icons.add),
-                  label: const Text('Add Invoice'),
+                  label: Text(localizations.addInvoice),
                 ),
               ],
             ),
