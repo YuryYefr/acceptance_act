@@ -30,15 +30,18 @@ class InvoiceTable extends StatelessWidget {
         return ListTile(
           title: Text('${inv.category} - ${inv.unit}'),
           subtitle: Text(
+              key: Key('invoice_total_$index'),
               'Price: ${inv.price}, Qty: ${inv.quantity}, Total: ${inv.total.toStringAsFixed(2)}'),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
+                key: Key('edit_invoice_$index'),
                 icon: const Icon(Icons.edit),
                 onPressed: () => onEdit(index),
               ),
               IconButton(
+                key: Key('delete_invoice_$index'),
                 icon: const Icon(Icons.delete),
                 onPressed: () => onDelete(index),
               ),

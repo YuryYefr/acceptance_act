@@ -167,6 +167,7 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
                 Text(localizations.invoices,
                     style: const TextStyle(fontSize: 18)),
                 ElevatedButton.icon(
+                  key: const Key('add_invoice_button'),
                   onPressed: _addInvoice,
                   icon: const Icon(Icons.add),
                   label: Text(localizations.addInvoice),

@@ -76,22 +76,26 @@ class _InvoiceEditorScreenState extends State<InvoiceEditorScreen> {
           child: Column(
             children: [
               TextFormField(
+                key: const Key('category_field'),
                 controller: _categoryCtrl,
                 decoration: InputDecoration(labelText: localizations.category),
                 validator: _validateRequired,
               ),
               TextFormField(
+                key: const Key('unit_field'),
                 controller: _unitCtrl,
                 decoration: InputDecoration(labelText: localizations.unit),
                 validator: _validateRequired,
               ),
               TextFormField(
+                key: const Key('price_field'),
                 controller: _priceCtrl,
                 decoration: InputDecoration(labelText: localizations.price),
                 keyboardType: TextInputType.number,
                 validator: _validateNumber,
               ),
               TextFormField(
+                key: const Key('quantity_field'),
                 controller: _quantityCtrl,
                 decoration: InputDecoration(labelText: localizations.quantity),
                 keyboardType: TextInputType.number,
@@ -99,6 +103,7 @@ class _InvoiceEditorScreenState extends State<InvoiceEditorScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                key: const Key('save_invoice_button'),
                 onPressed: _saveInvoice,
                 child: Text(localizations.save),
               ),

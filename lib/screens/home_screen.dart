@@ -30,77 +30,45 @@ class _HomeScreenState extends State<HomeScreen> {
   // Correct async handling
   Future<void> _loadActs() async {
     final loaded = await widget.storage.loadActs();
-    setState(() {
-      acts = loaded;
-    });
+    if (!mounted) return;
+    setState(() => acts = loaded);
   }
 
+
   Future<void> _createAct() async {
-    final localizations = AppLocalizations.of(context);
     final now = DateTime.now();
-    final defaultName = 'act_${now.year.toString().padLeft(4, '0')}-'
-        '${now.month.toString().padLeft(2, '0')}-'
-        '${now.day.toString().padLeft(2, '0')}_'
-        '${now.hour.toString().padLeft(2, '0')}-'
-        '${now.minute.toString().padLeft(2, '0')}';
+    final defaultName =
+        'act_${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}_'
+        '${now.hour.toString().padLeft(2, '0')}-${now.minute.toString().padLeft(2, '0')}';
 
-    String? actName;
-    bool autoName = true;
+    final controller = TextEditingController(text: defaultName);
 
-    final result = await showDialog<bool>(
+    final result = await showDialog<String>(
       context: context,
-      builder: (context) {
-        final controller = TextEditingController(text: defaultName);
-        return StatefulBuilder(
-          builder: (context, setState) => AlertDialog(
-            title: Text(localizations.newAcceptanceAct),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Checkbox(
-                      value: autoName,
-                      onChanged: (v) {
-                        setState(() {
-                          autoName = v ?? true;
-                          controller.text = autoName ? defaultName : '';
-                        });
-                      },
-                    ),
-                    Text(localizations.autoName),
-                  ],
-                ),
-                TextFormField(
-                  controller: controller,
-                  enabled: !autoName,
-                  autofocus: !autoName,
-                  decoration: InputDecoration(labelText: localizations.actName),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(localizations.cancel)),
-              ElevatedButton(
-                  onPressed: () {
-                    actName =
-                        controller.text.isEmpty ? defaultName : controller.text;
-                    Navigator.pop(context, true);
-                  },
-                  child: Text(localizations.create)),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('New Acceptance Act'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(labelText: 'Act Name'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, null),
+            child: const Text('Cancel'),
           ),
-        );
-      },
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: const Text('Create'),
+          ),
+        ],
+      ),
     );
 
-    if (result != true || actName == null) return;
+    if (result == null || result.trim().isEmpty) return;
 
     final act = AcceptanceAct(
       id: now.microsecondsSinceEpoch.toString(),
-      name: actName!,
+      name: result.trim(),
       category: '',
       sum: 0,
       quantity: 0,
@@ -109,22 +77,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() => acts.add(act));
 
-    // Navigate to AcceptanceActScreen
-    final deletedOrUpdated = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (_) =>
-              AcceptanceActScreen(act: act, storage: widget.storage)),
+        builder: (_) => AcceptanceActScreen(act: act, storage: widget.storage),
+      ),
     );
 
-    if (deletedOrUpdated == true) {
-      // Act was deleted inside AcceptanceActScreen
-      _loadActs();
-    } else {
-      // Otherwise, reload to catch updates
-      _loadActs();
-    }
+    await _loadActs();
   }
+
 
   @override
   Widget build(BuildContext context) {
