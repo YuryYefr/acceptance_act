@@ -79,8 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text(localizations.cancel),
             ),
             ElevatedButton(
-              onPressed: () =>
-                  Navigator.pop(context, controller.text.trim()),
+              onPressed: () => Navigator.pop(context, controller.text.trim()),
               child: Text(localizations.create),
             ),
           ],

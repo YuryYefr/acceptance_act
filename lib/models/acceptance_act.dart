@@ -32,21 +32,21 @@ class AcceptanceAct {
   }
 
   factory AcceptanceAct.fromJson(Map<String, dynamic> json) => AcceptanceAct(
-    id: json['id'],
-    name: json['name'],
-    category: json['category'],
-    sum: (json['sum'] as num).toDouble(),
-    quantity: json['quantity'],
-    invoices:
-    (json['invoices'] as List).map((e) => Invoice.fromJson(e)).toList(),
-  );
+        id: json['id'],
+        name: json['name'],
+        category: json['category'],
+        sum: (json['sum'] as num).toDouble(),
+        quantity: json['quantity'],
+        invoices:
+            (json['invoices'] as List).map((e) => Invoice.fromJson(e)).toList(),
+      );
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'category': category,
-    'sum': sum,
-    'quantity': quantity,
-    'invoices': invoices.map((e) => e.toJson()).toList(),
-  };
+        'id': id,
+        'name': name,
+        'category': category,
+        'sum': sum,
+        'quantity': quantity,
+        'invoices': invoices.map((e) => e.toJson()).toList(),
+      };
 }

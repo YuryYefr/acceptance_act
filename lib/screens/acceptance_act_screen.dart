@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import '../models/acceptance_act.dart';
 import '../models/invoice.dart';
@@ -115,24 +117,29 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
 
   Future<void> _exportAct() async {
     try {
-      final result = await FilePicker.platform.saveFile(
+      String? path = await FilePicker.platform.saveFile(
         dialogTitle: 'Save Acceptance Act',
         fileName: '${_act.name}.xlsx',
-        allowedExtensions: ['xlsx'],
         type: FileType.custom,
+        allowedExtensions: ['xlsx'],
       );
 
-      if (result == null) return;
+      if (path == null) return; // user cancelled
 
-      await ExcelService.export(act: _act, filePath: result);
+      final file = File(path);
+      await file.parent.create(recursive: true);
+
+      await ExcelService.export(act: _act, filePath: path);
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Exported to $result')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Saved to ${file.path}')),
+      );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Export failed: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Export failed: $e')),
+      );
     }
   }
 

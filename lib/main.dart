@@ -17,7 +17,7 @@ void main() async {
   runApp(AcceptanceActApp(
     storage: storage,
     initialLocale:
-    savedLocale != null ? Locale(savedLocale) : const Locale('en'),
+        savedLocale != null ? Locale(savedLocale) : const Locale('en'),
   ));
 }
 

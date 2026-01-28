@@ -19,7 +19,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   file_picker: ^8.0.0
-  excel: ^4.0.2
+  excel: ^2.1.0
+
   shared_preferences: ^2.2.2
   path_provider: ^2.0.15
 
