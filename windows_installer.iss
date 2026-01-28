@@ -19,7 +19,7 @@ SolidCompression=yes
 WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64
 PrivilegesRequired=lowest
-SetupIconFile=build\windows\x64\runner\Release\app.ico
+SetupIconFile=build\windows\x64\runner\Release\app_icon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
 [Languages]

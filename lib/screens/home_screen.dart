@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadActs();
   }
 
-  // Correct async handling
   Future<void> _loadActs() async {
     final loaded = await widget.storage.loadActs();
     if (!mounted) return;
@@ -41,41 +40,66 @@ class _HomeScreenState extends State<HomeScreen> {
         '${now.hour.toString().padLeft(2, '0')}-${now.minute.toString().padLeft(2, '0')}';
 
     final controller = TextEditingController(text: defaultName);
+    bool autoName = true;
     final localizations = AppLocalizations.of(context);
 
     final result = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(localizations.newAct),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(labelText: localizations.actName),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(localizations.newAcceptanceAct),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Checkbox(
+                    value: autoName,
+                    onChanged: (v) {
+                      setState(() {
+                        autoName = v ?? true;
+                        controller.text = autoName ? defaultName : '';
+                      });
+                    },
+                  ),
+                  Text(localizations.autoName),
+                ],
+              ),
+              TextField(
+                controller: controller,
+                enabled: !autoName,
+                autofocus: !autoName,
+                decoration: InputDecoration(labelText: localizations.actName),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: Text(localizations.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () =>
+                  Navigator.pop(context, controller.text.trim()),
+              child: Text(localizations.create),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, null),
-            child: Text(localizations.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: Text(localizations.create),
-          ),
-        ],
       ),
     );
 
-    if (result == null || result.trim().isEmpty) return;
+    if (result == null || result.isEmpty) return;
 
     final act = AcceptanceAct(
-      id: now.microsecondsSinceEpoch.toString(),
-      name: result.trim(),
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      name: result,
       category: '',
       sum: 0,
       quantity: 0,
       invoices: [],
     );
 
-    setState(() => acts.add(act));
+    await widget.storage.saveAct(act);
 
     await Navigator.push(
       context,
@@ -98,7 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.language),
             onPressed: () {
-              // Show language selection dialog
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
@@ -110,28 +133,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: const Text('English'),
                         onTap: () {
                           Navigator.pop(context);
-                          // Change locale to English
-                          if (widget.onLocaleChanged != null) {
-                            widget.onLocaleChanged!(const Locale('en'));
-                          }
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Language changed to English')),
-                          );
+                          widget.onLocaleChanged?.call(const Locale('en'));
                         },
                       ),
                       ListTile(
                         title: const Text('Українська'),
                         onTap: () {
                           Navigator.pop(context);
-                          // Change locale to Ukrainian
-                          if (widget.onLocaleChanged != null) {
-                            widget.onLocaleChanged!(const Locale('uk'));
-                          }
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Мову змінено на українську')),
-                          );
+                          widget.onLocaleChanged?.call(const Locale('uk'));
                         },
                       ),
                     ],
@@ -153,13 +162,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text(act.name),
             ),
             onTap: () async {
-              final deletedOrUpdated = await Navigator.push(
+              final deleted = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (_) =>
-                        AcceptanceActScreen(act: act, storage: widget.storage)),
+                  builder: (_) =>
+                      AcceptanceActScreen(act: act, storage: widget.storage),
+                ),
               );
-              if (deletedOrUpdated == true) _loadActs();
+              if (deleted == true) _loadActs();
             },
           );
         },

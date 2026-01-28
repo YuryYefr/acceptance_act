@@ -5,6 +5,8 @@ import '../services/storage_service.dart';
 import '../widgets/invoice_table.dart';
 import 'invoice_editor_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../services/excel_service.dart';
+import 'package:file_picker/file_picker.dart';
 
 class AcceptanceActScreen extends StatefulWidget {
   final AcceptanceAct act;
@@ -56,10 +58,14 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
     final invoice = await Navigator.push<Invoice>(
       context,
       MaterialPageRoute(
-          builder: (_) => InvoiceEditorScreen(locale: widget.locale)),
+        builder: (_) => InvoiceEditorScreen(locale: widget.locale),
+      ),
     );
     if (invoice == null) return;
-    _act.invoices.add(invoice);
+
+    setState(() {
+      _act.invoices.add(invoice);
+    });
     await _persist();
   }
 
@@ -68,11 +74,16 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => InvoiceEditorScreen(
-            invoice: _act.invoices[index], locale: widget.locale),
+          invoice: _act.invoices[index],
+          locale: widget.locale,
+        ),
       ),
     );
     if (updated == null) return;
-    _act.invoices[index] = updated;
+
+    setState(() {
+      _act.invoices[index] = updated;
+    });
     await _persist();
   }
 
@@ -104,10 +115,20 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
 
   Future<void> _exportAct() async {
     try {
-      final path = await widget.storage.exportAct(_act);
+      final result = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Acceptance Act',
+        fileName: '${_act.name}.xlsx',
+        allowedExtensions: ['xlsx'],
+        type: FileType.custom,
+      );
+
+      if (result == null) return;
+
+      await ExcelService.export(act: _act, filePath: result);
+
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Exported to $path')));
+          .showSnackBar(SnackBar(content: Text('Exported to $result')));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -118,6 +139,7 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_act.name),
@@ -178,7 +200,9 @@ class _AcceptanceActScreenState extends State<AcceptanceActScreen> {
                 invoices: _act.invoices,
                 onEdit: _editInvoice,
                 onDelete: (i) async {
-                  _act.invoices.removeAt(i);
+                  setState(() {
+                    _act.invoices.removeAt(i);
+                  });
                   await _persist();
                 },
               ),

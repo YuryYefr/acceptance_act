@@ -17,7 +17,7 @@ void main() async {
   runApp(AcceptanceActApp(
     storage: storage,
     initialLocale:
-        savedLocale != null ? Locale(savedLocale) : const Locale('en'),
+    savedLocale != null ? Locale(savedLocale) : const Locale('en'),
   ));
 }
 
@@ -32,11 +32,11 @@ class AcceptanceActApp extends StatefulWidget {
   });
 
   @override
-  State<AcceptanceActApp> createState() => _MyAppState();
+  State<AcceptanceActApp> createState() => _AcceptanceActAppState();
 }
 
-class _MyAppState extends State<AcceptanceActApp> {
-  Locale _locale = const Locale('en');
+class _AcceptanceActAppState extends State<AcceptanceActApp> {
+  late Locale _locale;
 
   @override
   void initState() {
@@ -48,7 +48,6 @@ class _MyAppState extends State<AcceptanceActApp> {
     setState(() {
       _locale = locale;
     });
-    // Save the locale preference
     SharedPreferences.getInstance().then((prefs) {
       prefs.setString('locale', locale.languageCode);
     });

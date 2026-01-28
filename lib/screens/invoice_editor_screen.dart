@@ -66,9 +66,10 @@ class _InvoiceEditorScreenState extends State<InvoiceEditorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text(widget.invoice == null
-              ? localizations.addInvoice
-              : localizations.editInvoice)),
+        title: Text(widget.invoice == null
+            ? localizations.addInvoice
+            : localizations.editInvoice),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

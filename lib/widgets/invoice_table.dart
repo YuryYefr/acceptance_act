@@ -28,10 +28,11 @@ class InvoiceTable extends StatelessWidget {
       itemBuilder: (context, index) {
         final inv = invoices[index];
         return ListTile(
-          title: Text('${inv.category} - ${inv.unit}'),
+          title: Text('${inv.category} – ${inv.unit}'),
           subtitle: Text(
-              key: Key('invoice_total_$index'),
-              'Price: ${inv.price}, Qty: ${inv.quantity}, Total: ${inv.total.toStringAsFixed(2)}'),
+            key: Key('invoice_total_$index'),
+            'Price: ${inv.price}, Qty: ${inv.quantity}, Total: ${inv.total.toStringAsFixed(2)}',
+          ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
